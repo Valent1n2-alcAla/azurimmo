@@ -1,6 +1,8 @@
 package bts.sio.azurimmo.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import bts.sio.azurimmo.model.dto.BatimentDTO;
 import bts.sio.azurimmo.repository.BatimentRepository;
@@ -21,4 +23,11 @@ public class BatimentService {
         return batimentRepository.findById(id) 
                                  .map(BatimentMapper::toDTO);
     }
+    
+    public List<BatimentDTO> getBatimentsDTO() {
+        return batimentRepository.findAll()
+                                 .stream()
+                                 .map(BatimentMapper::toDTO)
+                                 .collect(Collectors.toList());
+}
 }

@@ -1,5 +1,6 @@
 package bts.sio.azurimmo.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired; // NOUVEL IMPORT
@@ -40,4 +41,9 @@ public class BatimentController {
 	                          // Sinon (le DTO est vide/non trouvé)
 	                          .orElse(ResponseEntity.notFound().build()); 
 	}
+	
+	 @GetMapping("/")
+	    public List<BatimentDTO> getAllBatiments() {
+	        return batimentService.getBatimentsDTO(); 
+	    }
 }
