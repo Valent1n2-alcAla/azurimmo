@@ -3,6 +3,7 @@ package bts.sio.azurimmo.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired; // NOUVEL IMPORT
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping; // NOUVEL IMPORT
@@ -26,4 +27,17 @@ public class BatimentController {
         // Appel sur l'instance injectée
         return batimentService.getBatimentDTO(batimentId);
     }
+	
+	@GetMapping("/re/{batimentId}")
+	public ResponseEntity<BatimentDTO> getBatimentReDTO(@PathVariable Long batimentId){
+	    
+	    // Utilisation de Long pour la cohérence des ID (recommandé)
+	    return batimentService.getBatimentDTO(batimentId)
+	                          
+	                          // Si l'Optional contient une valeur (le DTO est trouvé)
+	                          .map(ResponseEntity::ok) 
+	                          
+	                          // Sinon (le DTO est vide/non trouvé)
+	                          .orElse(ResponseEntity.notFound().build()); 
+	}
 }
