@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BatimentDTO {
+	private Long id;
 	private String adresse;
     private String ville;
     private List<AppartementDTO> appartements;
