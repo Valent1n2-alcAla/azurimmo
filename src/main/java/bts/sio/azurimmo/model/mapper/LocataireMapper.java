@@ -20,7 +20,6 @@ public class LocataireMapper {
     public static Locataire toEntity(LocataireDTO dto) {
         if (dto == null) return null;
         Locataire entity = new Locataire();
-        // On ne met pas l'ID ici si c'est pour une création, car il est généré par la BDD
         entity.setNom(dto.getNom());
         entity.setPrenom(dto.getPrenom());
         entity.setTelephone(dto.getTelephone());

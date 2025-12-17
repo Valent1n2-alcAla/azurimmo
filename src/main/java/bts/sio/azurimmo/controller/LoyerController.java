@@ -17,6 +17,7 @@ import java.util.Optional;
 @RequestMapping("/api/loyers")
 @Tag(name = "Loyers", description = "Gestion des loyers")
 public class LoyerController {
+
     @Autowired
     private LoyerService loyerService;
 
@@ -39,5 +40,26 @@ public class LoyerController {
     public ResponseEntity<LoyerDTO> createLoyer(@RequestBody LoyerDTO loyerDTO) {
         LoyerDTO created = loyerService.save(loyerDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
+    }
+    
+    @PutMapping("/{id}")
+    @Operation(summary = "Mettre à jour un paiement de loyer")
+    public ResponseEntity<LoyerDTO> updateLoyer(@PathVariable Long id, @RequestBody LoyerDTO loyerDTO) {
+        try {
+            Optional<LoyerDTO> updated = loyerService.updateLoyer(id, loyerDTO);
+            return updated.map(ResponseEntity::ok)
+                          .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Supprimer un paiement de loyer")
+    public ResponseEntity<Void> deleteLoyer(@PathVariable Long id) {
+        if (loyerService.deleteLoyer(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

@@ -27,11 +27,8 @@ public class Batiment {
 	 private String ville;
 	 
 	 
-	 // -------------------------------------------------------------------
-	 // AJOUT DE LA RELATION ONE-TO-MANY (Résout l'erreur getAppartements())
-	 // -------------------------------------------------------------------
+	 
 	 
 	 @OneToMany(mappedBy = "batiment", cascade = CascadeType.ALL, orphanRemoval = true)
-     // Lombok (@Data) va générer automatiquement le getAppartements() nécessaire au Mapper
 	 private List<Appartement> appartements; 
 }

@@ -1,9 +1,13 @@
 package bts.sio.azurimmo.service;
 
+import bts.sio.azurimmo.model.Contrat;
 import bts.sio.azurimmo.model.Loyer;
+
 import bts.sio.azurimmo.model.dto.LoyerDTO;
+import bts.sio.azurimmo.model.mapper.LoyerMapper;
 import bts.sio.azurimmo.model.dto.ContratDTO; // Import du DTO simple
 import bts.sio.azurimmo.repository.LoyerRepository;
+import jakarta.transaction.Transactional;
 import bts.sio.azurimmo.repository.ContratRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,9 +35,7 @@ public class LoyerService {
         return toDTO(savedEntity);
     }
     
-    // ----------------------------------------------------------------------
-    // LOGIQUE DE CONVERSION (MISE À JOUR pour gérer les objets imbriqués)
-    // ----------------------------------------------------------------------
+
 
     private Loyer toEntity(LoyerDTO dto) {
         Loyer entity = new Loyer();
@@ -41,7 +43,7 @@ public class LoyerService {
         entity.setDatePaiement(dto.getDatePaiement());
         entity.setMontantPaye(dto.getMontantPaye());
 
-        // Gérer la relation : on récupère l'ID à l'intérieur de l'objet DTO imbriqué
+        
         if (dto.getContrat() != null && dto.getContrat().getId() != null) {
             contratRepository.findById(dto.getContrat().getId()).ifPresent(entity::setContrat);
         }
@@ -54,7 +56,7 @@ public class LoyerService {
         dto.setDatePaiement(entity.getDatePaiement());
         dto.setMontantPaye(entity.getMontantPaye());
         
-        // Convertir l'Entité liée en DTO Simple pour la réponse (GET)
+        
         if (entity.getContrat() != null) {
             ContratDTO contratDto = new ContratDTO();
             contratDto.setId(entity.getContrat().getId());
@@ -62,4 +64,35 @@ public class LoyerService {
         }
         return dto;
     }
+    @Transactional
+    public Optional<LoyerDTO> updateLoyer(Long id, LoyerDTO dtoDetails) {
+        return loyerRepository.findById(id)
+            .map(existingLoyer -> {
+              
+                if (dtoDetails.getMontantPaye() != null) 
+                    existingLoyer.setMontantPaye(dtoDetails.getMontantPaye());
+                if (dtoDetails.getDatePaiement() != null) 
+                    existingLoyer.setDatePaiement(dtoDetails.getDatePaiement());
+                
+                
+                if (dtoDetails.getContrat() != null && dtoDetails.getContrat().getId() != null) {
+                    Contrat contrat = contratRepository.findById(dtoDetails.getContrat().getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Contrat non trouvé."));
+                    existingLoyer.setContrat(contrat);
+                }
+                
+                Loyer updatedLoyer = loyerRepository.save(existingLoyer);
+                return LoyerMapper.toDTO(updatedLoyer);
+            });
+    }
+    
+    @Transactional
+    public boolean deleteLoyer(Long id) { 
+        if (loyerRepository.existsById(id)) {
+            loyerRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+    
 }

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import bts.sio.azurimmo.model.Batiment;
 import bts.sio.azurimmo.model.dto.BatimentDTO;
 import bts.sio.azurimmo.repository.BatimentRepository;
+import jakarta.transaction.Transactional;
 import bts.sio.azurimmo.model.mapper.BatimentMapper;
 import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.stereotype.Service; 
@@ -19,8 +20,6 @@ public class BatimentService {
     private BatimentRepository batimentRepository; 
 
     public Optional<BatimentDTO> getBatimentDTO(Long id) {
-        
-        // 2. Appel de la méthode sur l'INSTANCE injectée
         return batimentRepository.findById(id) 
                                  .map(BatimentMapper::toDTO);
     }
@@ -35,5 +34,30 @@ public class BatimentService {
         Batiment entity = BatimentMapper.toEntity(dto);
         Batiment saved = batimentRepository.save(entity);
         return BatimentMapper.toDTO(saved);
+    }
+    
+    @Transactional
+    public Optional<BatimentDTO> updateBatiment(Long id, BatimentDTO dtoDetails) {
+        return batimentRepository.findById(id)
+            .map(existingBatiment -> {
+                
+                if (dtoDetails.getAdresse() != null) 
+                    existingBatiment.setAdresse(dtoDetails.getAdresse());
+                if (dtoDetails.getVille() != null) 
+                    existingBatiment.setVille(dtoDetails.getVille());
+                
+                
+                Batiment updatedBatiment = batimentRepository.save(existingBatiment);
+                return BatimentMapper.toDTO(updatedBatiment);
+            });
+    }
+    
+    @Transactional
+    public boolean deleteBatiment(Long id) {
+        if (batimentRepository.existsById(id)) {
+            batimentRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

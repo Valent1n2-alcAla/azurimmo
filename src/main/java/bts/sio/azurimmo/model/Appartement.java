@@ -16,7 +16,7 @@ public class Appartement {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	// Caractéristique: numero (par rapport au batiment)
+	
 	@Column(name = "numero")
 	private Integer numero;
 
@@ -24,11 +24,10 @@ public class Appartement {
 	@Column(name = "surface")
 	private Double surface;
 
-	// Caractéristique: nombre de pièces principales
+	
 	@Column(name = "nb_pieces")
 	private Integer nombrePieces;
 
-	// Caractéristique: description
 	@Column(name = "description")
 	private String description;
     

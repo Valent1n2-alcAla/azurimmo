@@ -17,16 +17,17 @@ import java.util.Optional;
 @RequestMapping("/api/locataires")
 @Tag(name = "Locataires", description = "Gestion des locataires")
 public class LocataireController {
+
     @Autowired
     private LocataireService locataireService;
 
-    @GetMapping // GET /api/locataires
+    @GetMapping
     @Operation(summary = "Récupère tous les locataires")
     public List<LocataireDTO> getAllLocataires() {
         return locataireService.findAll();
     }
 
-    @GetMapping("/{id}") // GET /api/locataires/1
+    @GetMapping("/{id}")
     @Operation(summary = "Récupère tous les locataires selon l'ID")
     public ResponseEntity<LocataireDTO> getLocataireById(@PathVariable Long id) {
         Optional<LocataireDTO> dto = locataireService.findById(id);
@@ -34,10 +35,27 @@ public class LocataireController {
                   .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping // POST /api/locataires
+    @PostMapping
     @Operation(summary = "Créer un locataire")
     public ResponseEntity<LocataireDTO> createLocataire(@RequestBody LocataireDTO locataireDTO) {
         LocataireDTO created = locataireService.save(locataireDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
+    }
+    
+    @PutMapping("/{id}")
+    @Operation(summary = "Mettre à jour un locataire")
+    public ResponseEntity<LocataireDTO> updateLocataire(@PathVariable Long id, @RequestBody LocataireDTO locataireDTO) {
+        Optional<LocataireDTO> updated = locataireService.updateLocataire(id, locataireDTO);
+        return updated.map(ResponseEntity::ok)
+                      .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Supprimer un locataire")
+    public ResponseEntity<Void> deleteLocataire(@PathVariable Long id) {
+        if (locataireService.deleteLocataire(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

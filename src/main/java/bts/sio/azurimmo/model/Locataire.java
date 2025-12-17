@@ -21,8 +21,6 @@ public class Locataire {
     private String mail;
     private LocalDate dateNaissance;
 
-    // RELATION : Un Locataire peut avoir plusieurs Contrats (1, *)
-    // mappedBy pointe vers le champ 'locataire' dans l'entité Contrat
     @OneToMany(mappedBy = "locataire", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Contrat> contrats; 
 }

@@ -1,12 +1,14 @@
 package bts.sio.azurimmo.service;
 
-import bts.sio.azurimmo.model.Intervention;
 import bts.sio.azurimmo.model.dto.InterventionDTO;
-import bts.sio.azurimmo.model.dto.AppartementDTO; // Import du DTO simple
-import bts.sio.azurimmo.repository.InterventionRepository;
+import bts.sio.azurimmo.model.Appartement;
+import bts.sio.azurimmo.model.Intervention;
+import bts.sio.azurimmo.model.mapper.InterventionMapper;
 import bts.sio.azurimmo.repository.AppartementRepository;
+import bts.sio.azurimmo.repository.InterventionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,56 +16,92 @@ import java.util.stream.Collectors;
 
 @Service
 public class InterventionService {
-    @Autowired private InterventionRepository interventionRepository;
-    @Autowired private AppartementRepository appartementRepository;
 
-    public List<InterventionDTO> findAll() {
-        return interventionRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    private final InterventionRepository interventionRepository;
+    private final AppartementRepository appartementRepository;
+
+    @Autowired
+    public InterventionService(InterventionRepository interventionRepository, 
+                               AppartementRepository appartementRepository) {
+        this.interventionRepository = interventionRepository;
+        this.appartementRepository = appartementRepository;
     }
 
-    public Optional<InterventionDTO> findById(Long id) {
-        return interventionRepository.findById(id).map(this::toDTO);
-    }
-
-    public InterventionDTO save(InterventionDTO dto) {
-        Intervention entity = toEntity(dto);
-        Intervention savedEntity = interventionRepository.save(entity);
-        return toDTO(savedEntity);
-    }
-    
-    // ----------------------------------------------------------------------
-    // LOGIQUE DE CONVERSION (MISE À JOUR pour gérer les objets imbriqués)
-    // ----------------------------------------------------------------------
-
-    private Intervention toEntity(InterventionDTO dto) {
-        Intervention entity = new Intervention();
-        if (dto.getId() != null) entity.setId(dto.getId());
-        entity.setType(dto.getType());
-        entity.setDatePrevue(dto.getDatePrevue());
-        entity.setDateRealise(dto.getDateRealise());
-        entity.setDescription(dto.getDescription());
-
-        // Gérer la relation : on récupère l'ID à l'intérieur de l'objet DTO imbriqué
-        if (dto.getAppartement() != null && dto.getAppartement().getId() != null) {
-            appartementRepository.findById(dto.getAppartement().getId()).ifPresent(entity::setAppartement);
-        }
-        return entity;
-    }
-
-    private InterventionDTO toDTO(Intervention entity) {
-        InterventionDTO dto = new InterventionDTO();
-        dto.setId(entity.getId());
-        dto.setType(entity.getType());
-        dto.setDatePrevue(entity.getDatePrevue());
-        dto.setDateRealise(entity.getDateRealise());
-        dto.setDescription(entity.getDescription());
+    @Transactional
+    public InterventionDTO createIntervention(InterventionDTO interventionDTO) {
         
-        // Convertir l'Entité liée en DTO Simple pour la réponse (GET)
-        if (entity.getAppartement() != null) {
-            AppartementDTO appartDto = new AppartementDTO();
-            appartDto.setId(entity.getAppartement().getId());
-            dto.setAppartement(appartDto);
+        Long appartementId = interventionDTO.getAppartement().getId();
+        
+        
+        Appartement appartement = appartementRepository.findById(appartementId)
+                .orElseThrow(() -> new IllegalArgumentException("Appartement non trouvé avec l'ID: " + appartementId));
+
+       
+        Intervention intervention = InterventionMapper.toEntity(interventionDTO);
+        intervention.setAppartement(appartement);
+
+        
+        Intervention savedIntervention = interventionRepository.save(intervention);
+        return InterventionMapper.toDTO(savedIntervention);
+    }
+
+    
+    public List<InterventionDTO> getAllInterventions() {
+        return interventionRepository.findAll().stream()
+                .map(InterventionMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<InterventionDTO> getInterventionById(Long id) {
+        return interventionRepository.findById(id)
+                .map(InterventionMapper::toDTO);
+    }
+
+    
+    @Transactional
+    public Optional<InterventionDTO> updateIntervention(Long id, InterventionDTO details) {
+        return interventionRepository.findById(id)
+                .map(existingIntervention -> {
+                    
+                    
+                    if (details.getAppartement() != null && details.getAppartement().getId() != null) {
+                        Long newAppartementId = details.getAppartement().getId();
+                        
+                       
+                        if (!newAppartementId.equals(existingIntervention.getAppartement().getId())) {
+                            Appartement newAppartement = appartementRepository.findById(newAppartementId)
+                                    .orElseThrow(() -> new IllegalArgumentException("Appartement non trouvé pour la mise à jour avec l'ID: " + newAppartementId));
+                            existingIntervention.setAppartement(newAppartement);
+                        }
+                    } else {
+                        throw new IllegalArgumentException("L'ID de l'Appartement est requis pour la mise à jour de l'intervention.");
+                    }
+                    
+                    
+                    if (details.getType() != null) {
+                        existingIntervention.setType(details.getType());
+                    }
+                    if (details.getDatePrevue() != null) {
+                        existingIntervention.setDatePrevue(details.getDatePrevue());
+                    }
+                    if (details.getDateRealise() != null) {
+                        existingIntervention.setDateRealise(details.getDateRealise());
+                    }
+                    if (details.getDescription() != null) {
+                        existingIntervention.setDescription(details.getDescription());
+                    }
+
+                    Intervention updatedIntervention = interventionRepository.save(existingIntervention);
+                    return InterventionMapper.toDTO(updatedIntervention);
+                });
+    }
+
+    @Transactional
+    public boolean deleteIntervention(Long id) {
+        if (interventionRepository.existsById(id)) {
+            interventionRepository.deleteById(id);
+            return true;
         }
-        return dto;
+        return false;
     }
 }

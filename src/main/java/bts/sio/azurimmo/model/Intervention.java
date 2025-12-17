@@ -19,7 +19,7 @@ public class Intervention {
     private LocalDate dateRealise;
     private String description;
 
-    // RELATION : Plusieurs Interventions concernent le même Appartement (1, 1)
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appartement_id", nullable = false)
     private Appartement appartement;

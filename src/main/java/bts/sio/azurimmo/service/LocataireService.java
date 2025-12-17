@@ -4,6 +4,8 @@ import bts.sio.azurimmo.model.Locataire;
 import bts.sio.azurimmo.model.dto.LocataireDTO;
 import bts.sio.azurimmo.model.mapper.LocataireMapper;
 import bts.sio.azurimmo.repository.LocataireRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +30,33 @@ public class LocataireService {
     }
 
     public LocataireDTO save(LocataireDTO dto) {
-        // Convertir DTO en Entité (sans se soucier des relations pour l'instant)
         Locataire entity = LocataireMapper.toEntity(dto);
         Locataire savedEntity = locataireRepository.save(entity);
         return LocataireMapper.toDTO(savedEntity);
+    }
+    
+    @Transactional
+    public Optional<LocataireDTO> updateLocataire(Long id, LocataireDTO dtoDetails) {
+        return locataireRepository.findById(id)
+            .map(existingLocataire -> {
+                
+                if (dtoDetails.getNom() != null) 
+                    existingLocataire.setNom(dtoDetails.getNom());
+                if (dtoDetails.getPrenom() != null) 
+                    existingLocataire.setPrenom(dtoDetails.getPrenom());
+                
+                
+                Locataire updatedLocataire = locataireRepository.save(existingLocataire);
+                return LocataireMapper.toDTO(updatedLocataire);
+            });
+    }
+    
+    @Transactional
+    public boolean deleteLocataire(Long id) {
+        if (locataireRepository.existsById(id)) {
+            locataireRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

@@ -13,6 +13,6 @@ public class InterventionDTO {
     private LocalDate dateRealise;
     private String description;
     
-    // Changement : on utilise l'objet Appartement (sous forme de DTO)
+  
     private AppartementDTO appartement;
 }

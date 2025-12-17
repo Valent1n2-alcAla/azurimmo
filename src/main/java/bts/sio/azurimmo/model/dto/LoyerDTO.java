@@ -11,6 +11,6 @@ public class LoyerDTO {
     private LocalDate datePaiement;
     private Double montantPaye;
     
-    // Changement : on utilise l'objet Contrat (sous forme de DTO)
+    
     private ContratDTO contrat; 
 }

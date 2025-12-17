@@ -13,7 +13,7 @@ public class ContratDTO {
     private Double montantBrut;
     private Double montantCharge;
     
-    // Changement : on utilise l'objet Locataire et Appartement (sous forme de DTO)
+    
     private LocataireDTO locataire;   
     private AppartementDTO appartement; 
 }
