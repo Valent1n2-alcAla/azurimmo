@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/locataires")
+@CrossOrigin(origins= "*")
 @Tag(name = "Locataires", description = "Gestion des locataires")
 public class LocataireController {
 

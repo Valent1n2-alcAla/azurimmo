@@ -33,84 +33,37 @@
         }
 
         .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px;
         }
 
-        h2 {
-            color: var(--azur-primary);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0;
-        }
+        h2 { color: var(--azur-primary); font-weight: 700; text-transform: uppercase; margin: 0; }
 
         .btn-add {
             background: linear-gradient(to right, var(--azur-primary), var(--azur-secondary));
-            border: none;
-            color: white;
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: transform 0.2s;
+            border: none; color: white; padding: 10px 25px; border-radius: 50px;
+            font-weight: 600; transition: transform 0.2s;
         }
 
-        .btn-add:hover {
-            transform: scale(1.05);
-            color: white;
-        }
+        .btn-add:hover { transform: scale(1.05); color: white; }
 
-        .table {
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .table thead {
-            background-color: var(--dark-bg);
-            color: white;
-        }
-
-        .table th {
-            padding: 15px;
-            font-weight: 500;
-            border: none;
-        }
-
-        .table td {
-            padding: 15px;
-            vertical-align: middle;
-            background: white;
-        }
+        .table thead { background-color: var(--dark-bg); color: white; }
+        .table td { vertical-align: middle; background: white; }
 
         .avatar-circle {
-            width: 40px;
-            height: 40px;
-            background: var(--azur-primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 15px;
+            width: 40px; height: 40px; background: var(--azur-primary); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; margin-right: 15px;
+        }
+
+        .status-badge {
+            background: #e1f5fe; color: #01579b; padding: 5px 12px; border-radius: 20px;
+            font-size: 0.85rem; font-weight: 600;
         }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        .status-badge {
-            background: #e1f5fe;
-            color: #01579b;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
         }
     </style>
 </head>
@@ -129,7 +82,9 @@
     <div class="dashboard-container">
         <div class="header-section">
             <h2><i class="fa-solid fa-users-gear me-3"></i>Locataires AzurImmo</h2>
-            <button class="btn btn-add"><i class="fa-solid fa-plus me-2"></i>Nouveau Locataire</button>
+            <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#modalAddLocataire">
+                <i class="fa-solid fa-plus me-2"></i>Nouveau Locataire
+            </button>
         </div>
 
         <div class="table-responsive">
@@ -143,41 +98,118 @@
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="locataires-table">
-                    </tbody>
+                <tbody id="locataires-table"></tbody>
             </table>
         </div>
     </div>
 </div>
 
-<script>
-    fetch('/api/locataires/') // Ajout du slash de sécurité pour votre API
-        .then(response => response.json())
-        .then(data => {
-            const tableBody = document.getElementById('locataires-table');
-            data.forEach(loc => {
-                const email = loc.mail || loc.email || "Contact non renseigné";
-                const initiales = ((loc.prenom ? loc.prenom.charAt(0) : '?') + (loc.nom ? loc.nom.charAt(0) : '?')).toUpperCase();
+<div class="modal fade" id="modalAddLocataire" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-primary">Ajouter un locataire</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formLocataire">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Nom</label>
+                            <input type="text" id="addNom" class="form-control rounded-3" placeholder="DUPONT" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Prénom</label>
+                            <input type="text" id="addPrenom" class="form-control rounded-3" placeholder="Jean" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Email</label>
+                            <input type="email" id="addMail" class="form-control rounded-3" placeholder="jean.dupont@email.com" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Téléphone</label>
+                            <input type="tel" id="addTel" class="form-control rounded-3" placeholder="0601020304">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Date de naissance</label>
+                            <input type="date" id="addDateNais" class="form-control rounded-3">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-                const row = `
-                    <tr>
-                        <td><div class="avatar-circle">${initiales}</div></td>
-                        <td>
-                            <div class="fw-bold">${loc.nom ? loc.nom.toUpperCase() : 'N/A'}</div>
-                            <div class="text-muted small">${loc.prenom || ''}</div>
-                        </td>
-                        <td><i class="fa-regular fa-envelope me-2 text-primary"></i>${email}</td>
-                        <td><span class="status-badge text-uppercase">Sous contrat</span></td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-primary me-1"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function chargerLocataires() {
+        fetch('/api/locataires/')
+            .then(res => res.json())
+            .then(data => {
+                const tableBody = document.getElementById('locataires-table');
+                tableBody.innerHTML = "";
+                data.forEach(loc => {
+                    // Utilise 'mail' pour correspondre à votre entité Java
+                    const email = loc.mail || "Non renseigné";
+                    const initiales = ((loc.prenom ? loc.prenom.charAt(0) : '?') + (loc.nom ? loc.nom.charAt(0) : '?')).toUpperCase();
+
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td><div class="avatar-circle">${initiales}</div></td>
+                            <td>
+                                <div class="fw-bold">${loc.nom ? loc.nom.toUpperCase() : 'N/A'}</div>
+                                <div class="text-muted small">${loc.prenom || ''}</div>
+                            </td>
+                            <td><i class="fa-regular fa-envelope me-2 text-primary"></i>${email}</td>
+                            <td><span class="status-badge text-uppercase">Sous contrat</span></td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary me-1"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                });
+            })
+            .catch(err => console.error("Erreur Maître :", err));
+    }
+
+    document.getElementById('formLocataire').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const dateVal = document.getElementById('addDateNais').value;
+
+        // L'objet respecte les noms exacts de Locataire.java
+        const nouveauLoc = {
+            nom: document.getElementById('addNom').value,
+            prenom: document.getElementById('addPrenom').value,
+            mail: document.getElementById('addMail').value,
+            telephone: document.getElementById('addTel').value,
+            dateNaissance: dateVal ? dateVal : null // Sécurité pour LocalDate
+        };
+
+        fetch('/api/locataires', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(nouveauLoc)
+        })
+        .then(res => {
+            if(res.ok) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalAddLocataire'));
+                modal.hide();
+                document.getElementById('formLocataire').reset();
+                chargerLocataires();
+            } else {
+                alert("Erreur lors de l'enregistrement, Maître. Vérifiez les types de données.");
+            }
         })
         .catch(err => console.error("Erreur Maître :", err));
+    });
+
+    chargerLocataires();
 </script>
 
 </body>
