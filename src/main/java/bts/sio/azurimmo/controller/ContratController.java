@@ -21,7 +21,7 @@ public class ContratController {
     @Autowired
     private ContratService contratService;
 
-    @GetMapping
+    @GetMapping("/")
     @Operation(summary = "Récupère tous les contrats")
     public List<ContratDTO> getAllContrats() {
         return contratService.getAllContrats();

@@ -21,7 +21,7 @@ public class InterventionController {
     @Autowired
     private InterventionService interventionService;
 
-    @GetMapping
+    @GetMapping("/")
     @Operation(summary = "Récupère toutes les interventions")
     public List<InterventionDTO> getAllInterventions() {
         return interventionService.getAllInterventions();

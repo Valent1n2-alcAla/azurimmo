@@ -21,7 +21,7 @@ public class LocataireController {
     @Autowired
     private LocataireService locataireService;
 
-    @GetMapping
+    @GetMapping("/")
     @Operation(summary = "Récupère tous les locataires")
     public List<LocataireDTO> getAllLocataires() {
         return locataireService.findAll();

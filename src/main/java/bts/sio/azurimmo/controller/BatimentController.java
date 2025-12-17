@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/batiments")
+@CrossOrigin(origins = "*")
 @Tag(name = "Batiments", description = "Gestion des batiments")
 public class BatimentController {
     
@@ -41,7 +43,7 @@ public class BatimentController {
                               .orElse(ResponseEntity.notFound().build()); 
     }
     
-     @GetMapping("/")
+     @GetMapping("")
      @Operation(summary = "Récupère tous les batiments")
      public List<BatimentDTO> getAllBatiments() {
          return batimentService.getBatimentsDTO(); 

@@ -21,7 +21,7 @@ public class LoyerController {
     @Autowired
     private LoyerService loyerService;
 
-    @GetMapping
+    @GetMapping("/")
     @Operation(summary = "Récupère tous les loyers")
     public List<LoyerDTO> getAllLoyers() {
         return loyerService.findAll();
