@@ -2,6 +2,7 @@ package bts.sio.azurimmo.model.mapper;
 
 import bts.sio.azurimmo.model.Batiment;
 import bts.sio.azurimmo.model.dto.BatimentDTO;
+import java.util.stream.Collectors;
 
 public class BatimentMapper {
 
@@ -11,14 +12,17 @@ public class BatimentMapper {
         }
 
         BatimentDTO dto = new BatimentDTO();
-        // CETTE LIGNE EST CRUCIALE POUR AFFICHER LA RÉFÉRENCE
         dto.setId(entity.getId()); 
-        
         dto.setAdresse(entity.getAdresse());
         dto.setVille(entity.getVille());
         
-        // Note : Si vous avez besoin des appartements dans le DTO, 
-        // il faudra aussi les mapper ici plus tard.
+        // --- LA CORRECTION EST ICI ---
+        if (entity.getAppartements() != null) {
+            dto.setAppartements(entity.getAppartements().stream()
+                .map(AppartementMapper::toDTO) // On transforme chaque Appartement en AppartementDTO
+                .collect(Collectors.toList()));
+        }
+        // -----------------------------
         
         return dto;
     }

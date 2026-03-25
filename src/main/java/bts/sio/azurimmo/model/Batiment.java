@@ -1,34 +1,31 @@
 package bts.sio.azurimmo.model;
 
-import jakarta.persistence.CascadeType; // NOUVEL IMPORT
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany; // NOUVEL IMPORT
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
-import java.util.List; // NOUVEL IMPORT
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.List;
+import java.util.ArrayList;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "batiment")
 public class Batiment {
-	
-	 @Id
-	 @GeneratedValue(strategy = GenerationType.IDENTITY)
-	 private Long id;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	 @Column(name="adresse")
-	 private String adresse;
+    @Column(name="adresse")
+    private String adresse;
 
-	 @Column(name="ville")
-	 private String ville;
-	 
-	 
-	 
-	 
-	 @OneToMany(mappedBy = "batiment", cascade = CascadeType.ALL, orphanRemoval = true)
-	 private List<Appartement> appartements; 
+    @Column(name="ville")
+    private String ville;
+
+    @OneToMany(mappedBy = "batiment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference // Autorise l'affichage des appartements dans le JSON du bâtiment
+    private List<Appartement> appartements = new ArrayList<>();
 }

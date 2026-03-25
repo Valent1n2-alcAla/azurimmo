@@ -27,6 +27,7 @@
         <a href="appartement.html" class="btn btn-sm btn-outline-primary rounded-pill px-3">Appartements</a>
         <a href="contrat.html" class="btn btn-sm btn-outline-primary rounded-pill px-3">Contrats</a>
         <a href="intervention.html" class="btn btn-sm btn-primary rounded-pill px-3">Interventions</a>
+        <a href="loyer.html" class="btn btn-sm btn-outline-primary rounded-pill px-3">Loyers</a>
     </nav>
 
     <div class="dashboard-container">
@@ -47,7 +48,8 @@
                     </tr>
                 </thead>
                 <tbody id="intervention-table">
-                    </tbody>
+                    <tr><td colspan="5" class="text-center py-4 text-muted">Chargement des interventions...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -69,7 +71,6 @@
             }
 
             data.forEach(inter => {
-                // Vérifiez ces noms dans votre classe Intervention : description, typeIntervention, dateIntervention
                 tableBody.innerHTML += `
                     <tr>
                         <td><div class="icon-circle fw-bold">${inter.id}</div></td>

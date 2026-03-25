@@ -25,6 +25,8 @@
         <a href="batiment.html" class="btn btn-sm btn-outline-primary rounded-pill px-3">Bâtiments</a>
         <a href="appartement.html" class="btn btn-sm btn-outline-primary rounded-pill px-3">Appartements</a>
         <a href="contrat.html" class="btn btn-sm btn-primary rounded-pill px-3">Contrats</a>
+        <a href="intervention.html" class="btn btn-sm btn-outline-primary rounded-pill px-3">Interventions</a>
+        <a href="loyer.html" class="btn btn-sm btn-outline-primary rounded-pill px-3">Loyers</a>
     </nav>
 
     <div class="dashboard-container">
@@ -45,14 +47,14 @@
                     </tr>
                 </thead>
                 <tbody id="contrat-table">
-                    </tbody>
+                    <tr><td colspan="5" class="text-center py-4 text-muted">Chargement des contrats...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 </div>
 
 <script>
-    // Maître, j'utilise l'URL standard, adaptez-la si votre controller diffère
     fetch('/api/contrats/') 
         .then(res => {
             if (!res.ok) throw new Error("Erreur " + res.status);
@@ -68,7 +70,9 @@
             }
 
             data.forEach(c => {
-                // Vérifiez ces noms : dateDebut, dateFin, loyerHC dans votre Entité Contrat
+                // Calcul sécurisé du loyer total (Conversion en Number pour éviter la concaténation de texte)
+                const totalLoyer = (Number(c.montantBrut || 0) + Number(c.montantCharge || 0)) || c.loyer || 0;
+
                 tableBody.innerHTML += `
                     <tr>
                         <td><div class="icon-circle fw-bold">${c.id}</div></td>
@@ -76,7 +80,7 @@
                             <div class="fw-bold">Du ${c.dateDebut || '...'}</div>
                             <small class="text-muted">Au ${c.dateFin || 'Indéterminé'}</small>
                         </td>
-                        <td><div class="fw-bold text-primary">${c.montantBrut + c.montantCharge || c.loyer || '0'} € / mois</div></td>
+                        <td><div class="fw-bold text-primary">${totalLoyer} € / mois</div></td>
                         <td><span class="status-active">ACTIF</span></td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-outline-dark"><i class="fa-solid fa-print"></i></button>

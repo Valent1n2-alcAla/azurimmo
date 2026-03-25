@@ -8,28 +8,27 @@ import bts.sio.azurimmo.model.Contrat;
 public class ContratMapper {
 
    
-    public static ContratDTO toDTO(Contrat entity) {
-        if (entity == null) return null;
+	public static ContratDTO toDTO(Contrat entity) {
+	    if (entity == null) return null;
 
-        ContratDTO dto = new ContratDTO();
-        dto.setId(entity.getId());
-        dto.setDateDebut(entity.getDateDebut());
-        dto.setDateFin(entity.getDateFin());
-        dto.setMontantBrut(entity.getMontantBrut());
-        dto.setMontantCharge(entity.getMontantCharge());
+	    ContratDTO dto = new ContratDTO();
+	    dto.setId(entity.getId());
+	    dto.setDateDebut(entity.getDateDebut());
+	    dto.setDateFin(entity.getDateFin());
+	    dto.setMontantBrut(entity.getMontantBrut());
+	    dto.setMontantCharge(entity.getMontantCharge());
 
-        
-        if (entity.getAppartement() != null) {
-            
-            dto.setAppartement(AppartementMapper.toDTO(entity.getAppartement()));
-        }
-        if (entity.getLocataire() != null) {
-           
-            dto.setLocataire(LocataireMapper.toDTO(entity.getLocataire()));
-        }
+	    // --- ON SUPPRIME LE MAPPING DE L'APPARTEMENT ICI ---
+	    // On ne veut pas créer de boucle infinie.
+	    // L'info de l'appartement est déjà connue par celui qui appelle ce mapper.
 
-        return dto;
-    }
+	    // On garde uniquement le locataire (pour avoir son nom sur Android)
+	    if (entity.getLocataire() != null) {
+	        dto.setLocataire(LocataireMapper.toDTO(entity.getLocataire()));
+	    }
+
+	    return dto;
+	}
 
     
     public static Contrat toEntity(ContratDTO dto) {
