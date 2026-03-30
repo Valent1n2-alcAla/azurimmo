@@ -1,8 +1,14 @@
 package bts.sio.azurimmo.repository;
 
 import bts.sio.azurimmo.model.Loyer;
+
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LoyerRepository extends JpaRepository<Loyer, Long> {}
+public interface LoyerRepository extends JpaRepository<Loyer, Long> {
+	List<Loyer> findByContratLocataireId(Long locataireId);
+	List<Loyer> findByContratAppartementId(Long appartementId);
+}

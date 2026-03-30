@@ -1,9 +1,11 @@
 package bts.sio.azurimmo.controller;
 
 import bts.sio.azurimmo.model.dto.LoyerDTO;
+import bts.sio.azurimmo.repository.LoyerRepository;
 import bts.sio.azurimmo.service.LoyerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import bts.sio.azurimmo.model.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,5 +63,15 @@ public class LoyerController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+    
+    @GetMapping("/locataire/{id}")
+    public List<LoyerDTO> getLoyersByLocataire(@PathVariable Long id){
+        return loyerService.findByLocataire(id);
+    }
+    
+    @GetMapping("/appartement/{id}")
+    public List<LoyerDTO> getLoyersByAppartement(@PathVariable Long id) {
+        return loyerService.findByAppartement(id);
     }
 }
